@@ -1,5 +1,6 @@
 #include "constants.h"
 #include "DxLib.h"
+#include <math.h>
 
 class vec {
 public:
@@ -30,12 +31,25 @@ public:
 	vec position, velocity;
 	obj() {}
 	obj(double x_, double y_, double vx_, double vy_, double color_ = ColRed):position(x_, y_), velocity(vx_, vy_), color(color_) {}
+	virtual void Draw() {}
+	virtual vec ElasticForceByFrame() { return vec(0, 0); }
+	virtual vec ResistanceByAir() { return vec(0, 0); }
+	virtual int CloseToGround() { return 0; }
+	virtual int StandOnSth() { return 0; }
 };
 
 class oCircle:public obj {
 public:
 	double r;
-	oCircle() {}
+	oCircle() {
+		r = GetRand(50) + 50;
+		position.x = GetRand(WinWidth - 2 * r) + r;
+		position.y = GetRand(WinHeight - 2 * r) + r;
+		//velocity.x = GetRand(100) + 100;
+		velocity.x = 0;
+		velocity.y = 0;
+		color = GetRand(0xFFFFFF);
+	}
 	oCircle(double x_, double y_, double r_, double vx_ = 0, double vy_ = 0):obj(x_, y_, vx_, vy_), r(r_) {}
 	vec ElasticForceByFrame() {
 		double ax = 0, ay = 0;
@@ -45,7 +59,8 @@ public:
 		}
 		// ÏÂ²àµ¯Á¦
 		if (position.y >= WinHeight - r) {
-			ay -= kfac1 * (position.y - WinHeight + r);
+			if (velocity.y > 0) ay -= kfac1 * (position.y - WinHeight + r);
+			else ay = 0;
 		}
 		// ×ó²àµ¯Á¦
 		if (position.x <= r) {
@@ -59,5 +74,14 @@ public:
 	}
 	void Draw() {
 		DrawCircle((int) position.x, (int) position.y, r, color);
+	}
+	vec ResistanceByAir() { 
+		return vec(velocity.x, velocity.y) * (- sqrt(sqr(velocity.x) + sqr(velocity.y)) * AirResistanceFactor); 
+	}
+	int CloseToGround() {
+		return position.y + r > WinHeight - eps;
+	}
+	int StandOnSth() {
+		return position.y + r > WinHeight - eps;
 	}
 };

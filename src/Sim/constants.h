@@ -14,18 +14,29 @@ const int CalRate = 1000;
 const double dt = 1.0 / 60 / CalRate;
 
 // 引力系数，随便乱设的值
-const double gra = 300;
+const double gra = 3000;
 
 // 物体与墙壁的弹性系数，随便乱设的值，需要比引力系数大上一些
-const double kfac1 = 1000;
-
-// 速度递减系数，随便乱设的值
-const double dec_ratio = 1;
+const double kfac1 = gra * 100;
 
 // 极小值
 const double eps = 1e-10;
 
 // 光速 : 为了使得空间稳定，位移尽量看起来连续，byw，其实光速的确可能就是做这个事情的
 const double veloflight = 10000;
+
+// 按键对物体产生的力的大小
+const double PressPower = 3000;
+
+// 地面摩擦系数
+const double FrictionFactor = 100;
+
+const double DecRatio = 0.9999;
+
+const double JumpPower = 1000;
+
+const double AirResistanceFactor = 0;
+
+#define sqr(x) ((x) * (x))
 
 #endif
